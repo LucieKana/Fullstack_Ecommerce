@@ -9,4 +9,4 @@ I build components, make them communicate with each other and retrieve/send data
 
 Finally I merge both ap[plications into one, packaged web app inside the static folder.
 
-## Will complete the deployment on Heroku
+## Will complete the deployment on Heroku later,I need to learn how to deploy it.
