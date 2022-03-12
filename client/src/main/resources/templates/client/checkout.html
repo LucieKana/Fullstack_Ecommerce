@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Checkout</title>
+</head>
+<body>
+
+<!-- Main Container  -->
+<div  layout:fragment="content" class="main-container container">
+    <ul class="breadcrumb">
+        <li><a href="#"><i class="fa fa-home"></i></a></li>
+        <li><a href="#">Checkout</a></li>
+    </ul>
+    <div class="row" th:if="${shoppingCart == null}">
+        <div class="col-sm-12">
+             <div class="alert alert-danger">You can't process checkout because your cart is empty !</div>
+        </div>
+    </div>
+    <div class="row" th:if="${shoppingCart != null}">
+        <!--Middle Part Start-->
+        <form th:action="@{/checkout}" th:object="${shoppingCart}" enctype="multipart/form-data" method="post">
+
+            <input type="hidden" th:field="*{id}"/>
+
+            <input type="hidden" th:field="*{customer.id}"/>
+            <input type="hidden" th:field="*{customer.isDeleted}"/>
+            <input type="hidden" th:field="*{customer.password}"/>
+            <input type="hidden" th:field="*{customer.username}"/>
+
+            <div id="content" class="col-sm-12">
+                <div th:if="${param.success}">
+                    <div class="alert alert-info">You've successfully changed your personal details!</div>
+                </div>
+
+                <div th:if="${param.cartEmpty}">
+                    <div class="alert alert-danger">Cart is empty so we cannot proceed !</div>
+                </div>
+
+
+                <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                    <p th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
+                </div>
+
+
+                <h2 class="title">Checkout</h2>
+                <div class="so-onepagecheckout row">
+                   <div class="col-left col-sm-3">
+                        <!--<div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><i class="fa fa-sign-in"></i> Create an Account or Login</h4>
+                            </div>
+                            <div class="panel-body">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="register" name="account">
+                                        Register Account</label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" checked="checked" value="guest" name="account">
+                                        Guest Checkout</label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="returning" name="account">
+                                        Returning Customer</label>
+                                </div>
+                            </div>
+                        </div>-->
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><i class="fa fa-user"></i> Your Personal Details</h4>
+                            </div>
+                            <div class="panel-body">
+                                <fieldset id="account">
+                                    <div class="form-group required">
+                                        <label for="firstName" class="control-label">First Name</label>
+                                        <input type="text" class="form-control" th:field="*{customer.firstName}" id="firstName" placeholder="First Name">
+                                        <p th:if="${#fields.hasErrors('customer.firstName')}" th:errorclass="error" th:errors="*{customer.firstName}" />
+                                    </div>
+                                    <div class="form-group required">
+                                        <label for="lastName" class="control-label">Last Name</label>
+                                        <input type="text" class="form-control" th:field="*{customer.lastName}" id="lastName" placeholder="Last Name">
+                                        <p th:if="${#fields.hasErrors('customer.lastName')}" th:errorclass="error" th:errors="*{customer.lastName}" />
+                                    </div>
+                                   <!-- <div class="form-group required">
+                                        <label  class="control-label">Username (E-Mail Address)</label>
+                                        <input type="email" readonly="readonly" class="form-control" th:value="${customer.username}" placeholder="E-Mail">
+                                    </div>-->
+                                    <div class="form-group required">
+                                        <label for="phone" class="control-label">Telephone</label>
+                                        <input type="tel" class="form-control" th:field="*{customer.phone}" id="phone" placeholder="Telephone">
+                                        <p th:if="${#fields.hasErrors('customer.phone')}" th:errorclass="error" th:errors="*{customer.phone}" />
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><i class="fa fa-book"></i> Your Address</h4>
+                            </div>
+                            <div class="panel-body">
+                                <fieldset id="address" class="required">
+                                    <div class="form-group">
+                                        <label for="company" class="control-label">Company</label>
+                                        <input type="text" th:field="*{customer.company}" placeholder="Company" id="company" class="form-control">
+                                    </div>
+                                    <div class="form-group required">
+                                        <label for="address1" class="control-label">Address 1</label>
+                                        <input type="text" th:field="*{customer.address1}" placeholder="Address 1" id="address1" class="form-control">
+                                        <p th:if="${#fields.hasErrors('customer.address1')}" th:errorclass="error" th:errors="*{customer.address1}" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="address2" class="control-label">Address 2</label>
+                                        <input type="text" th:field="*{customer.address2}" placeholder="Address 2" id="address2" class="form-control">
+                                    </div>
+                                    <div class="form-group required">
+                                        <label for="city" class="control-label">City</label>
+                                        <input type="text" th:field="*{customer.city}" placeholder="City" id="city" class="form-control">
+                                        <p th:if="${#fields.hasErrors('customer.city')}" th:errorclass="error" th:errors="*{customer.city}" />
+                                    </div>
+                                    <div class="form-group required">
+                                        <label for="postalCode" class="control-label">Post Code</label>
+                                        <input type="text" th:field="*{customer.postalCode}" placeholder="Post Code" id="postalCode" class="form-control">
+                                        <p th:if="${#fields.hasErrors('customer.postalCode')}" th:errorclass="error" th:errors="*{customer.postalCode}" />
+                                    </div>
+                                    <div class="form-group required">
+                                        <label class="control-label">Country</label>
+                                        <select th:field="*{customer.country.id}" class="form-control">
+                                            <option value=""> --- Please Select --- </option>
+                                            <option th:each="countryInfo : ${countries}" th:value="${countryInfo.id}" th:utext="${countryInfo.code}+' - '+${countryInfo.name}"></option>
+                                        </select>
+                                        <p th:if="${#fields.hasErrors('customer.country.id')}" th:errorclass="error" th:errors="*{customer.country.id}" />
+                                    </div>
+                                    <div class="form-group required">
+                                        <label for="state" class="control-label">Region / State</label>
+                                        <input type="text" th:field="*{customer.state}" placeholder="State" id="state" class="form-control">
+                                        <p th:if="${#fields.hasErrors('customer.state')}" th:errorclass="error" th:errors="*{customer.state}" />
+                                    </div>
+
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-right col-sm-9">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="panel panel-default no-padding">
+                                    <div class="col-sm-6 checkout-shipping-methods">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title"><i class="fa fa-truck"></i> Delivery Method</h4>
+                                        </div>
+                                        <div class="panel-body ">
+                                            <p>Please select the preferred shipping method to use on this order.</p>
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" checked="checked" value="Free Shipping" th:field="*{shippingMethod}">
+                                                    Free Shipping - $0.00
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" value="Flat Shipping 7.50" th:field="*{shippingMethod}">
+                                                    Flat Shipping Rate - $7.50
+                                                </label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6  checkout-payment-methods">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title"><i class="fa fa-credit-card"></i> Payment Method</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <p>Please select the preferred payment method to use on this order.</p>
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" checked="checked" value="Cash On Delivery" th:field="*{paymentMethod}">
+                                                    Cash On Delivery
+                                                </label>
+                                            </div>
+
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" value="Paypal" th:field="*{paymentMethod}">Paypal
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-sm-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title"><i class="fa fa-shopping-cart"></i> Shopping cart</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <td class="text-center">Image</td>
+                                                    <td class="text-left">Product Name</td>
+                                                    <td class="text-left">Quantity</td>
+                                                    <td class="text-right">Unit Price</td>
+                                                    <td class="text-right">Total</td>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr th:each="cartItem : ${shoppingCart.getCartItemList()}">
+                                                            <td class="text-center"><a th:href="@{/part-details(id=${cartItem.product.id})}"><img width="70px" th:src="#{adminPath}+${cartItem.product.getFullImage1Url()}" th:alt="${cartItem.product.name}" th:title="${cartItem.product.name}" class="img-thumbnail" /></a></td>
+                                                            <td class="text-left"><a th:href="@{/part-details(id=${cartItem.product.id})}" th:text="${cartItem.product.name}"></a><br /></td>
+                                                            <td class="text-center" th:text="${cartItem.quantity}"></td>
+                                                            <td class="text-right" th:text="${cartItem.ourPrice}"></td>
+                                                            <td class="text-right" th:text="${cartItem.totalPrice}"></td>
+                                                        </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <td class="text-right" colspan="4">
+                                                        <strong>Sub-Total:</strong>
+                                                    </td>
+                                                    <td class="text-right" th:text="${shoppingCart.subTotal}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-right"  colspan="4">
+                                                        <strong>Tax Rate:</strong>
+                                                    </td>
+                                                    <td class="text-right" th:text="${shoppingCart.taxRate}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-right"  colspan="4">
+                                                        <strong>Tax Total:</strong>
+                                                    </td>
+                                                    <td class="text-right" th:text="${shoppingCart.taxTotal}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-right"  colspan="4">
+                                                        <strong>Total:</strong>
+                                                    </td>
+                                                    <td class="text-right" th:text="${shoppingCart.grandTotal}"></td>
+                                                </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title"><i class="fa fa-pencil"></i> Add Comments About Your Order</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <textarea rows="4" class="form-control" th:text="${shoppingCart.description}"></textarea>
+                                        <br>
+                                        <!--<label class="control-label" for="confirm_agree">
+                                            <input type="checkbox" checked="checked" value="1" required="" class="validate required" id="confirm_agree" name="confirm agree">
+                                            <span>I have read and agree to the <a class="agree" href="#"><b>Terms &amp; Conditions</b></a></span>
+                                        </label>-->
+                                        <div class="buttons">
+                                            <div class="pull-right">
+                                                <a th:href="@{/view-cart}" class="btn btn-warning">Modify Cart</a> |
+                                                <input type="submit" class="btn btn-primary" id="button-confirm" value="Confirm Order">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!--Middle Part End -->
+        </form>
+
+    </div>
+</div>
+<!-- //Main Container -->
+
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+    </script>
+</th:block>
+</body>
+</html>
